@@ -19,6 +19,18 @@ export const connectDatabase = async (): Promise<void> => {
   try {
     await sequelize.authenticate();
     logger.info('PostgreSQL connected successfully.');
+
+    // Dynamically import models to break circular dependencies during initialization
+    const User = (await import('../models/User')).default;
+    const Otp = (await import('../models/Otp')).default;
+
+    logger.debug(`Registered models: ${[User.name, Otp.name].join(', ')}`);
+
+    // Sync models in development
+    if (env.nodeEnv === 'development') {
+      await sequelize.sync({ alter: true });
+      logger.info('Database models synchronized successfully (alter: true).');
+    }
   } catch (error) {
     logger.error('Unable to connect to PostgreSQL database:', error);
     process.exit(1);

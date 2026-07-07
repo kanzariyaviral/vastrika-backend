@@ -4,6 +4,7 @@ import { connectDatabase } from './config/database';
 import { connectRedis } from './config/redis';
 import { initBullMQ } from './config/bullmq';
 import { logger } from './utils/logger';
+import './workers/emailWorker'; // Start the email queue worker
 
 const startServer = async () => {
   try {
